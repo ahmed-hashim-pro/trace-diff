@@ -124,7 +124,8 @@ make demo          # three runs through a real Collector, then the two compariso
 ```
 
 `go test ./...` runs the unit tests in a few seconds. `make bench` runs every
-synthetic scenario over 200 seeds (the table below; about five minutes).
+synthetic scenario over 200 seeds and the broken comparisons (the tables
+below; 15 to 20 minutes on four cores).
 
 ## Using it
 
