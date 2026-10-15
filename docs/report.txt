@@ -1,0 +1,35 @@
+before: examples/shop/before.jsonl.gz, 300 traces, 2128 spans
+after:  examples/shop/after.jsonl.gz, 300 traces, 4203 spans
+
+endpoint                   requests     median ms        p95 ms
+frontend GET /orders/{id}  300 → 300    9.69 → 9.52      73.4 → 50.3
+
+FAIL  n-plus-one  frontend GET /orders/{id}
+      repeated per request: orders · db · SELECT id, sku, qty, price_cents FROM order_items WHERE id = ?
+      new: in 100% of requests, up to 50 calls each (median 5, p95 9), one after another
+      replaces SELECT id, sku, qty, price_cents FROM order_items WHERE order_id = ? ORDER BY id (1 call per request before, gone after)
+      called from orders · server · GET /orders/{id}
+      the request waits on it in 100% of those requests: 0.13 ms median, 0.37 ms p95
+      trace after  08f7b4dbb263f116221d9c87ef3ef9b2  50 calls
+      trace after  d322190dec4fa55e9a8508da05719035  typical, 5 calls
+      trace before 223fb023e8f229999614a3f2e1d7706c  median request, no such call
+
+FAIL  retry-storm  frontend GET /orders/{id}
+      retries: frontend · client · GET pricing:8080 /quote/{n} → pricing GET /quote/{order}
+      requests with a retry: 0% before, 10% after
+      attempts per request where called: mean 1.00 before, 1.11 after (max 3)
+      called from frontend · server · GET /orders/{id}
+      the request waits on it in 100% of those requests: 9.00 ms median, 49.7 ms p95
+      trace after  29974935e470596f305343263f6851dc  3 attempts, 2 retries
+      trace after  ab6f33fa44c095debb23d0f5fb7b26d7  typical, 2 attempts
+      trace before 223fb023e8f229999614a3f2e1d7706c  median request, 1 call
+
+FAIL  new-sync-call  frontend GET /orders/{id}
+      new call: orders · db · SELECT id FROM order_items WHERE order_id = ? ORDER BY id
+      in 100% of requests, 1 call each (median)
+      called from orders · server · GET /orders/{id}
+      the request waits on it in 100% of those requests: 0.05 ms median, 0.09 ms p95
+      trace after  01111bbeeb8e4a4554dd2f2855accad2  1 call
+      trace before 223fb023e8f229999614a3f2e1d7706c  median request, no such call
+
+3 failing, 0 to look at, 0 for context

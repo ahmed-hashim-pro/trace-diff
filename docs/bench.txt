@@ -1,0 +1,18 @@
+200 seeds per scenario, 300 requests per side (drift: 3000)
+
+scenario        found     unexpected   failing   first unexpected finding
+none            -         0/200        0/200
+n-plus-one      200/200   0/200        0/200
+new-sync-call   200/200   1/200        0/200     seed 9: INFO removed-call gateway GET /orders/{id}: called less: pricing · db · SELECT sku, price_cents FROM prices WHERE sku IN (?)
+new-hop         200/200   0/200        0/200
+retry-storm     200/200   0/200        0/200
+fan-out         200/200   0/200        0/200
+latency         200/200   0/200        0/200
+drift           -         5/200        0/200     seed 101: WARN more-frequent gateway GET /orders/{id}: called in more requests: pricing · db · SELECT sku, price_cents FROM prices WHERE sku IN (?)
+
+mutant               result   what changed
+keep-literals        caught   new-hop found 0/200, retry-storm found 0/200, fan-out found 0/200, and 1 more
+pooled               caught   none unexpected on 137/200, n-plus-one found 150/200, n-plus-one unexpected on 117/200, and 11 more
+no-correction        caught   n-plus-one unexpected on 1/200, new-sync-call unexpected on 2/200, new-hop unexpected on 1/200, and 2 more
+no-floors            caught   latency unexpected on 1/200, drift unexpected on 76/200
+any-repeat-is-retry  caught   n-plus-one found 0/200, n-plus-one unexpected on 200/200

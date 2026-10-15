@@ -1,0 +1,8 @@
+before: examples/shop/before.jsonl.gz, 300 traces, 2128 spans
+after:  examples/shop/rerun.jsonl.gz, 300 traces, 2126 spans
+
+endpoint                   requests     median ms        p95 ms
+frontend GET /orders/{id}  300 → 300    9.69 → 9.79      73.4 → 68.5
+
+no structural changes found
+0 failing, 0 to look at, 0 for context

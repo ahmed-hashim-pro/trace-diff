@@ -1,0 +1,64 @@
+# The demo shop: Postgres, three services, and an OpenTelemetry Collector
+# that writes every span to out/$PHASE.jsonl. demo/run.sh drives it.
+name: trace-diff-demo
+
+x-service: &service
+  build:
+    context: ..
+    dockerfile: demo/Dockerfile
+  image: trace-diff-shop:dev
+  environment: &env
+    CHANGE: ${CHANGE:-before}
+    LISTEN: ":8080"
+    OTEL_EXPORTER_OTLP_ENDPOINT: http://otelcol:4318
+    OTEL_BSP_SCHEDULE_DELAY: "500"
+    DATABASE_URL: postgres://postgres:shop@postgres:5432/postgres
+    ORDERS_URL: http://orders:8080
+    PRICING_URL: http://pricing:8080
+  depends_on: [otelcol]
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_PASSWORD: shop
+    volumes:
+      - ./seed.sql:/docker-entrypoint-initdb.d/seed.sql:ro
+    ports: ["127.0.0.1:15432:5432"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 1s
+      retries: 60
+
+  otelcol:
+    image: otel/opentelemetry-collector-contrib:0.161.0
+    command: ["--config=/etc/otelcol/config.yaml"]
+    user: "${HOST_UID:-10001}:${HOST_GID:-10001}"
+    environment:
+      PHASE: ${PHASE:-run}
+    volumes:
+      - ./otelcol.yaml:/etc/otelcol/config.yaml:ro
+      - ./out:/out
+
+  orders:
+    <<: *service
+    command: ["orders"]
+    depends_on:
+      otelcol: {condition: service_started}
+      postgres: {condition: service_healthy}
+
+  pricing:
+    <<: *service
+    command: ["pricing"]
+
+  frontend:
+    <<: *service
+    command: ["frontend"]
+    ports: ["127.0.0.1:18080:8080"]
+    depends_on: [otelcol, orders, pricing]
+
+  load:
+    <<: *service
+    command: ["load", "--url", "http://frontend:8080"]
+    depends_on: [frontend]
+    profiles: [load]

@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ["1.24", stable]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+      - run: go vet ./...
+      - run: test -z "$(gofmt -l .)" || (gofmt -l . && exit 1)
+      - run: go test -race ./...
+      # The demo module needs Go 1.25 (the OpenTelemetry SDK does).
+      - if: matrix.go == 'stable'
+        run: cd demo && go vet ./... && go test -race ./...
+
+  # The README's table: every scenario over 200 seeds, and the mutants.
+  bench:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - run: go build -o trace-diff ./cmd/trace-diff
+      - run: ./trace-diff bench --seeds 200 --mutants | tee bench.txt
+      - run: diff -u docs/bench.txt bench.txt
+
+  # The reports and pictures in docs/ must be what the current code makes
+  # of the committed example run.
+  docs-fresh:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - run: go build -o trace-diff ./cmd/trace-diff
+      - run: |
+          S=examples/shop
+          ./trace-diff check $S/before.jsonl.gz $S/rerun.jsonl.gz > docs/rerun.txt
+          ./trace-diff check $S/before.jsonl.gz $S/after.jsonl.gz --svg docs/n-plus-one.svg --svg-kind n-plus-one > docs/report.txt || test $? -eq 1
+          ./trace-diff check $S/before.jsonl.gz $S/after.jsonl.gz --svg docs/retry-storm.svg --svg-kind retry-storm > /dev/null || test $? -eq 1
+          git diff --exit-code -- docs
+
+  # The real thing: Postgres, the three instrumented services and an
+  # OpenTelemetry Collector, run before the change, again, and after.
+  demo:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - run: go build -o trace-diff ./cmd/trace-diff
+      - name: The change passes the shop's own tests
+        run: |
+          docker compose -f demo/compose.yaml up -d --wait postgres
+          make demo-test
+      - run: demo/run.sh
+      - name: An unchanged rerun is reported as no change
+        run: ./trace-diff check demo/out/before.jsonl demo/out/rerun.jsonl
+      - name: The change is caught, as an N+1 and a retry storm
+        run: |
+          set +e
+          ./trace-diff check demo/out/before.jsonl demo/out/after.jsonl | tee report.txt
+          code=${PIPESTATUS[0]}
+          set -e
+          test "$code" -eq 1
+          grep -q 'FAIL  n-plus-one' report.txt
+          grep -q 'FAIL  retry-storm' report.txt

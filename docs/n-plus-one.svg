@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="499" viewBox="0 0 1000 499" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs><pattern id="err" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="5" stroke="#cf222e" stroke-width="2"/></pattern><pattern id="run" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="#ffffff"/><circle cx="2" cy="2" r="1" fill="#57606a"/></pattern></defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="24" y="30" font-size="17" font-weight="600" fill="#24292f">frontend GET /orders/{id}: n-plus-one</text>
+<text x="24" y="50" font-size="12.5" fill="#57606a">repeated per request: orders · db · SELECT id, sku, qty, price_cents FROM order_items WHERE id = ?</text>
+<text x="24" y="76.0" font-size="13" font-weight="600" fill="#24292f">before: median request, no such call</text>
+<text x="976.0" y="76.0" font-size="11" text-anchor="end" fill="#57606a">9.68 ms, 7 spans</text>
+<line x1="380.0" y1="86.0" x2="380.0" y2="191.0" stroke="#d8dee4"/>
+<text x="380.0" y="203.0" font-size="10" text-anchor="middle" fill="#57606a">0 ms</text>
+<line x1="477.1" y1="86.0" x2="477.1" y2="191.0" stroke="#d8dee4"/>
+<text x="477.1" y="203.0" font-size="10" text-anchor="middle" fill="#57606a">2 ms</text>
+<line x1="574.2" y1="86.0" x2="574.2" y2="191.0" stroke="#d8dee4"/>
+<text x="574.2" y="203.0" font-size="10" text-anchor="middle" fill="#57606a">4 ms</text>
+<line x1="671.3" y1="86.0" x2="671.3" y2="191.0" stroke="#d8dee4"/>
+<text x="671.3" y="203.0" font-size="10" text-anchor="middle" fill="#57606a">6 ms</text>
+<line x1="768.4" y1="86.0" x2="768.4" y2="191.0" stroke="#d8dee4"/>
+<text x="768.4" y="203.0" font-size="10" text-anchor="middle" fill="#57606a">8 ms</text>
+<line x1="865.5" y1="86.0" x2="865.5" y2="191.0" stroke="#d8dee4"/>
+<text x="865.5" y="203.0" font-size="10" text-anchor="middle" fill="#57606a">10 ms</text>
+<line x1="962.6" y1="86.0" x2="962.6" y2="191.0" stroke="#d8dee4"/>
+<text x="962.6" y="203.0" font-size="10" text-anchor="middle" fill="#57606a">12 ms</text>
+<text x="24.0" y="96.0" font-size="10.5" font-weight="400" fill="#24292f">frontend · GET /orders/{id}</text>
+<rect x="380.0" y="88.0" width="469.9" height="9.0" fill="#2a78d6"/>
+<text x="34.0" y="111.0" font-size="10.5" font-weight="400" fill="#24292f">frontend · GET orders:8080 /orders/{n}</text>
+<rect x="380.5" y="103.0" width="12.1" height="9.0" fill="#2a78d6"/>
+<text x="44.0" y="126.0" font-size="10.5" font-weight="400" fill="#24292f">orders · GET /orders/{id}</text>
+<rect x="383.7" y="118.0" width="7.1" height="9.0" fill="#1f9e89"/>
+<text x="54.0" y="141.0" font-size="10.5" font-weight="400" fill="#24292f">orders · SELECT id, … status FROM orders WHERE id = ?</text>
+<rect x="384.0" y="133.0" width="3.7" height="9.0" fill="#1f9e89"/>
+<text x="54.0" y="156.0" font-size="10.5" font-weight="400" fill="#24292f">orders · SELECT id, …s WHERE order_id = ? ORDER BY id</text>
+<rect x="387.9" y="148.0" width="2.4" height="9.0" fill="#1f9e89"/>
+<text x="34.0" y="171.0" font-size="10.5" font-weight="400" fill="#24292f">frontend · GET pricing:8080 /quote/{n}</text>
+<rect x="393.6" y="163.0" width="454.9" height="9.0" fill="#2a78d6"/>
+<text x="44.0" y="186.0" font-size="10.5" font-weight="400" fill="#24292f">pricing · GET /quote/{order}</text>
+<rect x="396.7" y="178.0" width="447.4" height="9.0" fill="#8a63d2"/>
+<text x="24" y="225.0" font-size="13" font-weight="600" fill="#24292f">after: 50 calls</text>
+<text x="976.0" y="225.0" font-size="11" text-anchor="end" fill="#57606a">12.3 ms, 57 spans</text>
+<line x1="380.0" y1="235.0" x2="380.0" y2="445.0" stroke="#d8dee4"/>
+<text x="380.0" y="457.0" font-size="10" text-anchor="middle" fill="#57606a">0 ms</text>
+<line x1="477.1" y1="235.0" x2="477.1" y2="445.0" stroke="#d8dee4"/>
+<text x="477.1" y="457.0" font-size="10" text-anchor="middle" fill="#57606a">2 ms</text>
+<line x1="574.2" y1="235.0" x2="574.2" y2="445.0" stroke="#d8dee4"/>
+<text x="574.2" y="457.0" font-size="10" text-anchor="middle" fill="#57606a">4 ms</text>
+<line x1="671.3" y1="235.0" x2="671.3" y2="445.0" stroke="#d8dee4"/>
+<text x="671.3" y="457.0" font-size="10" text-anchor="middle" fill="#57606a">6 ms</text>
+<line x1="768.4" y1="235.0" x2="768.4" y2="445.0" stroke="#d8dee4"/>
+<text x="768.4" y="457.0" font-size="10" text-anchor="middle" fill="#57606a">8 ms</text>
+<line x1="865.5" y1="235.0" x2="865.5" y2="445.0" stroke="#d8dee4"/>
+<text x="865.5" y="457.0" font-size="10" text-anchor="middle" fill="#57606a">10 ms</text>
+<line x1="962.6" y1="235.0" x2="962.6" y2="445.0" stroke="#d8dee4"/>
+<text x="962.6" y="457.0" font-size="10" text-anchor="middle" fill="#57606a">12 ms</text>
+<text x="24.0" y="245.0" font-size="10.5" font-weight="400" fill="#24292f">frontend · GET /orders/{id}</text>
+<rect x="380.0" y="237.0" width="596.0" height="9.0" fill="#2a78d6"/>
+<text x="34.0" y="260.0" font-size="10.5" font-weight="400" fill="#24292f">frontend · GET orders:8080 /orders/{n}</text>
+<rect x="380.4" y="252.0" width="83.9" height="9.0" fill="#2a78d6"/>
+<text x="44.0" y="275.0" font-size="10.5" font-weight="400" fill="#24292f">orders · GET /orders/{id}</text>
+<rect x="383.2" y="267.0" width="79.0" height="9.0" fill="#1f9e89"/>
+<text x="54.0" y="290.0" font-size="10.5" font-weight="400" fill="#24292f">orders · SELECT id, … status FROM orders WHERE id = ?</text>
+<rect x="383.5" y="282.0" width="5.7" height="9.0" fill="#1f9e89"/>
+<text x="54.0" y="305.0" font-size="10.5" font-weight="400" fill="#24292f">orders · SELECT id F…s WHERE order_id = ? ORDER BY id</text>
+<rect x="389.4" y="297.0" width="3.6" height="9.0" fill="#1f9e89"/>
+<text x="54.0" y="320.0" font-size="10.5" font-weight="600" fill="#24292f">orders · SELECT id, …ts FROM order_items WHERE id = ?</text>
+<rect x="393.2" y="312.0" width="1.6" height="9.0" fill="#cf222e"/>
+<text x="54.0" y="335.0" font-size="10.5" font-weight="600" fill="#24292f">orders · SELECT id, …ts FROM order_items WHERE id = ?</text>
+<rect x="394.9" y="327.0" width="1.0" height="9.0" fill="#cf222e"/>
+<text x="54.0" y="350.0" font-size="10.5" font-weight="600" fill="#24292f">orders · SELECT id, …ts FROM order_items WHERE id = ?</text>
+<rect x="395.9" y="342.0" width="1.0" height="9.0" fill="#cf222e"/>
+<text x="54.0" y="365.0" font-size="10.5" font-weight="600" fill="#24292f">orders · SELECT id, …ts FROM order_items WHERE id = ?</text>
+<rect x="396.8" y="357.0" width="1.0" height="9.0" fill="#cf222e"/>
+<text x="54.0" y="380.0" font-size="10.5" font-weight="600" fill="#24292f">orders · SELECT id, …ts FROM order_items WHERE id = ?</text>
+<rect x="397.6" y="372.0" width="1.0" height="9.0" fill="#cf222e"/>
+<text x="54.0" y="395.0" font-size="10.5" font-weight="600" fill="#24292f">orders · SELECT id, …ts FROM order_items WHERE id = ?</text>
+<rect x="398.5" y="387.0" width="1.0" height="9.0" fill="#cf222e"/>
+<text x="54.0" y="410.0" font-size="10.5" font-weight="600" fill="#24292f">… 44 more like the one above</text>
+<rect x="399.4" y="402.0" width="61.5" height="9.0" fill="url(#run)" stroke="#cf222e" stroke-width="0.8"/>
+<text x="34.0" y="425.0" font-size="10.5" font-weight="400" fill="#24292f">frontend · GET pricing:8080 /quote/{n}</text>
+<rect x="467.0" y="417.0" width="507.0" height="9.0" fill="#2a78d6"/>
+<text x="44.0" y="440.0" font-size="10.5" font-weight="400" fill="#24292f">pricing · GET /quote/{order}</text>
+<rect x="469.3" y="432.0" width="501.5" height="9.0" fill="#8a63d2"/>
+<g transform="translate(24.0,476.0)"><rect width="12" height="10" fill="#2a78d6"/></g><text x="42.0" y="485.0" font-size="11" fill="#57606a">frontend</text>
+<g transform="translate(107.6,476.0)"><rect width="12" height="10" fill="#1f9e89"/></g><text x="125.6" y="485.0" font-size="11" fill="#57606a">orders</text>
+<g transform="translate(178.8,476.0)"><rect width="12" height="10" fill="#8a63d2"/></g><text x="196.8" y="485.0" font-size="11" fill="#57606a">pricing</text>
+<g transform="translate(256.2,476.0)"><rect width="12" height="10" fill="#cf222e"/></g><text x="274.2" y="485.0" font-size="11" fill="#57606a">the finding</text>
+<g transform="translate(358.4,476.0)"><rect width="12" height="10" fill="url(#err)" stroke="#cf222e"/></g><text x="376.4" y="485.0" font-size="11" fill="#57606a">error</text>
+</svg>
